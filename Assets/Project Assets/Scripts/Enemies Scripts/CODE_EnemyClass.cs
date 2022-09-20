@@ -7,33 +7,24 @@ namespace Enemies
     public class CODE_EnemyClass : MonoBehaviour
     {
         public GameObject _ObjRef;
+        public GameObject _ColliderLeft;
+        public GameObject _ColliderRight;
         public float _Speed;
         public float _TimeDelay;
-        public int _Health;
-        public int _Damage;
 
+        protected bool InCombat = false;
+        
         private Vector3 target;
         private bool bIsMoving = false;
-        private bool courotineEnd = true;
-        public GameObject colliderLeft;
-        public GameObject colliderRight;
-
-
-        void Start()
-        {
-            //colliderLeft = _ObjRef.transform.Find("Collider_Left").gameObject;
-            //colliderRight = _ObjRef.transform.Find("Collider_Right").gameObject;
-            bIsMoving = false;
-            courotineEnd = true;
-        }
+        private bool bCourotineEnd = true;
 
 
         /// <summary>
-        /// M�todo respons�vel por fazer a movimenta��o do inimigo
+        /// Metodo responsavel por fazer a movimentacao do inimigo
         /// </summary>
         public void Movimentation()
         {
-            if (bIsMoving) // Translada o inimigo para a proxima posi��o
+            if (bIsMoving) // Translada o inimigo para a proxima posicao
             {
                 Vector3 enemyTranslate = target - _ObjRef.transform.position;
                 _ObjRef.transform.Translate(enemyTranslate.normalized * _Speed * Time.deltaTime, Space.World);
@@ -43,9 +34,9 @@ namespace Enemies
                     bIsMoving = false;
                 }
             }
-            else // Quando a posi��o � alcan�ada, starta um Delay e troca para uma nova posi��o
+            else // Quando a posicao eh alcancada, starta um Delay e troca para uma nova posicao
             {
-                if (courotineEnd)
+                if (bCourotineEnd)
                 {
                     StartCoroutine(TranslateDelay(_TimeDelay));
                     target = _ObjRef.transform.position + SelectDirection();
@@ -54,49 +45,47 @@ namespace Enemies
             }
         }
 
-        public void AttackTower()
-        {
-            /*ADICIONAR M�TODO*/
-        }
-
         /// <summary>
-        /// Fun��o de Delay
+        /// Funcao de Delay
         /// </summary>
         /// <param name="delayTime"></param>
         /// <returns></returns>
         private IEnumerator TranslateDelay(float delayTime)
         {
-            courotineEnd = false;
+            bCourotineEnd = false;
             yield return new WaitForSeconds(delayTime);
             bIsMoving = true;
-            courotineEnd = true;
+            bCourotineEnd = true;
         }
 
         /// <summary>
-        /// Randomiza uma dire��o
+        /// Randomiza uma direcao
         /// </summary>
         private Vector3 SelectDirection()
         {
-            // Randomiza a dire��o
+            // Randomiza a direcao
             bool randomSeed, leftCol, rightCol;
             randomSeed = System.Convert.ToBoolean(Random.Range(0, 2));
 
-            // Verifica Colis�o a frente
-            leftCol = colliderLeft.GetComponent<CODE_ColliderDetection>()._InCollision;
-            rightCol = colliderRight.GetComponent<CODE_ColliderDetection>()._InCollision;
+            // Verifica Colisao a frente
+            leftCol = _ColliderLeft.GetComponent<CODE_ColliderDetection>()._InCollision;
+            rightCol = _ColliderRight.GetComponent<CODE_ColliderDetection>()._InCollision;
+
+            Debug.Log(_ColliderLeft.GetComponent<CODE_ColliderDetection>()._InCollision);
+            Debug.Log(_ColliderRight.GetComponent<CODE_ColliderDetection>()._InCollision);
 
             if (leftCol || rightCol)
             {
-                 // Caso haja colis�o verifica se � uma torre ou um aliado
-                if (colliderLeft.GetComponent<CODE_ColliderDetection>()._TagIndex == 1 || colliderRight.GetComponent<CODE_ColliderDetection>()._TagIndex == 1)
+                 // Caso haja colisao verifica se eh uma torre ou um aliado
+                if (_ColliderLeft.GetComponent<CODE_ColliderDetection>()._TagIndex == TagDetected.Tower || _ColliderRight.GetComponent<CODE_ColliderDetection>()._TagIndex == TagDetected.Tower)
                 {
-                    //ATAQUE
-                    AttackTower();
+                    //ESTA EM MODO DE ATAQUE
+                    InCombat = true;
                     return new Vector3(0f, 0f, 0f);
                 }
                 else
                 {
-                    //Movimenta para uma dire��o poss�vel
+                    //Movimenta para uma direcao possivel
                     if (leftCol && (this.transform.position.x + 0.5f) < 4.51f && !rightCol)
                     {
                         // Move a Direita
@@ -111,6 +100,8 @@ namespace Enemies
                     {
                         return new Vector3(0f, 0f, 0f);
                     }
+
+                    InCombat = false;
                 }
             }
             else
@@ -141,6 +132,8 @@ namespace Enemies
                         return new Vector3(-0.5f, -0.755f, 0f);
                     }
                 }
+
+                InCombat = false;
             }            
         }
     }

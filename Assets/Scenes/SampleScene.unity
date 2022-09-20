@@ -548,12 +548,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ObjRef: {fileID: 583588501}
+  _ColliderLeft: {fileID: 1267915447}
+  _ColliderRight: {fileID: 1306840747}
   _Speed: 2
   _TimeDelay: 0.1
-  _Health: 0
+  _Health: 100
   _Damage: 0
-  colliderLeft: {fileID: 1267915447}
-  colliderRight: {fileID: 1306840747}
 --- !u!50 &583588507
 Rigidbody2D:
   serializedVersion: 4

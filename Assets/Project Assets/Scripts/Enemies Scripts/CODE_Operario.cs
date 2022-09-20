@@ -4,20 +4,32 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public class CODE_Operario : CODE_EnemyClass
+    public class CODE_Operario : CODE_EnemyClass, IEnemyAttack
     {
-        // Start is called before the first frame update
+        public int _Health;
+        public int _Damage;
+
+
         void Start()
         {
 
         }
 
-        // Update is called once per frame
         void Update()
         {
+            // Movimenta o inimigo
             Movimentation();
+
+            if (InCombat)
+            {
+                AttackToTower();
+            }
         }
 
 
+        public void AttackToTower()
+        {
+            // ATAQUE
+        }
     }
 }
